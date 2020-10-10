@@ -6,11 +6,6 @@ services:
       - 15672:15672
       - 5672:5672
     container_name: rabbitmq-consumer
-    environment:
-      - RABBITMQ_HOST=rabbitmqConsumer
-      - RABBITMQ_USER=guest
-      - RABBITMQ_PASS=guest
-      - RABBITMQ_DEFAULT_VHOST=beer
 
   postgres:
     container_name: postgres_container

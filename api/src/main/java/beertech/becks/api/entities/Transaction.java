@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 public class Transaction implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Enumerated(EnumType.ORDINAL)
