@@ -47,6 +47,11 @@ public final class TransactionBuilder implements Builder<Transaction> {
         return this;
     }
 
+    public TransactionBuilder withDestinationHashValue(String destinationHashValue) {
+        this.transaction.setDestinationHashValue(destinationHashValue);
+        return this;
+    }
+
     @Override
     public Transaction builder() {
         return this.transaction;

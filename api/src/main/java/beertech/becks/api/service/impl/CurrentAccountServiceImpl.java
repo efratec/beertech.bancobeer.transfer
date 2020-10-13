@@ -61,7 +61,7 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
 
     private void updateBalanceAccountOrigin(CurrentAccount currentAccountOrigin, CurrentAccountTransferDTO dto) {
         Optional<BigDecimal> previosBalance = transactionRepository.getSumValueBalanceByHash(currentAccountOrigin.getHashValue());
-        currentAccountOrigin.setAccountBalance(previosBalance.isPresent() ? previosBalance.get().add(dto.getBalance()) : dto.getBalance());
+        currentAccountOrigin.setAccountBalance(previosBalance.isPresent() ? previosBalance.get().subtract(dto.getBalance()) : dto.getBalance());
         saveCurrentAccount(currentAccountOrigin);
     }
 
@@ -92,7 +92,10 @@ public class CurrentAccountServiceImpl implements CurrentAccountService {
     private CurrentAccount buildCurrentAccountWithHash(Long id) {
         if (id != null) {
             Long newId = id + NUMBER_1L;
-            return aCurrentAccount().withHashAccount(getHash(newId)).builder();
+            return aCurrentAccount()
+                    .withHashAccount(getHash(newId))
+                    .withAccountBalance(BigDecimal.ZERO)
+                    .builder();
         }
         return getHashInitialDefaut();
     }

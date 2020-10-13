@@ -11,7 +11,6 @@ import java.util.Optional;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Modifying
     @Query(value = "select sum(t.valueTransaction) from Transaction t where t.currentAccount.hashValue = :hashValue")
     Optional<BigDecimal> getSumValueBalanceByHash(@Param("hashValue") String hashValue);
 

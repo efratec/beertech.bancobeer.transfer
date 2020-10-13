@@ -51,6 +51,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .withOperation(getTypeOperationByDescription(dto.getOperation()))
                 .withValueTransaction(getValueTransactionByOperation(dto))
                 .withCurrentAccount(updateCurrentsAccountsBalance(dto))
+                .withDestinationHashValue(dto.getDestinationAccount())
                 .withDateTime(now())
                 .builder();
     }
@@ -73,7 +74,7 @@ public class TransactionServiceImpl implements TransactionService {
     private CurrentAccount updateCurrentAccountBalance(TransactionRequestDTO dto) {
         CurrentAccountDTO currentAccountDTO = CurrentAccountDTO
                 .builder()
-                .updatedBalance(getSumValueBalanceByHash(dto.getOriginAccount()))
+                .updatedBalance(getSumValueBalanceByHash(dto.getOriginAccount()).add(dto.getValue()))
                 .hashValue(dto.getOriginAccount())
                 .build();
         return currentAccountService.updateCurrentAccountTranscation(currentAccountDTO);
