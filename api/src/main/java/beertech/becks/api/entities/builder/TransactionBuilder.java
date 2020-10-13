@@ -1,10 +1,15 @@
 package beertech.becks.api.entities.builder;
 
+import beertech.becks.api.entities.CurrentAccount;
 import beertech.becks.api.entities.Transaction;
-import beertech.becks.api.model.TypeOperation;
+import beertech.becks.api.model.enums.TypeOperation;
+import beertech.becks.api.share.DTO.TransactionRequestDTO;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+
+import static beertech.becks.api.model.enums.TypeOperation.getTypeOperationByDescription;
+import static java.time.ZonedDateTime.now;
 
 public final class TransactionBuilder implements Builder<Transaction> {
 
@@ -37,8 +42,14 @@ public final class TransactionBuilder implements Builder<Transaction> {
         return this;
     }
 
+    public TransactionBuilder withCurrentAccount(CurrentAccount currentAccount) {
+        this.transaction.setCurrentAccount(currentAccount);
+        return this;
+    }
+
     @Override
     public Transaction builder() {
         return this.transaction;
     }
+
 }

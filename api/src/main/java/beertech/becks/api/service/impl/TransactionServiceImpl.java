@@ -1,54 +1,91 @@
 package beertech.becks.api.service.impl;
 
-import beertech.becks.api.entities.Balance;
+import beertech.becks.api.entities.CurrentAccount;
 import beertech.becks.api.entities.Transaction;
 import beertech.becks.api.repositories.TransactionRepository;
+import beertech.becks.api.service.CurrentAccountService;
 import beertech.becks.api.service.TransactionService;
-import beertech.becks.api.tos.TransactionRequestTO;
+import beertech.becks.api.share.DTO.CurrentAccountDTO;
+import beertech.becks.api.share.DTO.CurrentAccountTransferDTO;
+import beertech.becks.api.share.DTO.TransactionRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import static beertech.becks.api.model.TypeOperation.DEPOSITO;
-import static beertech.becks.api.model.TypeOperation.SAQUE;
+import static beertech.becks.api.entities.builder.TransactionBuilder.aTransaction;
+import static beertech.becks.api.model.enums.TypeOperation.*;
+import static java.math.BigDecimal.ZERO;
 import static java.time.ZonedDateTime.now;
+import static java.util.Optional.ofNullable;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-  private TransactionRepository transactionRepository;
+    private TransactionRepository transactionRepository;
+    private CurrentAccountService currentAccountService;
 
-  @Autowired
-  public TransactionServiceImpl(TransactionRepository transactionRepository) {
-    this.transactionRepository = transactionRepository;
-  }
-
-  @Override
-  public Transaction createTransaction(TransactionRequestTO transactionTO) {
-    Transaction transaction = new Transaction();
-
-    if (SAQUE.getDescription().equals(transactionTO.getOperation())) {
-      transaction.setValueTransaction(transactionTO.getValue().negate());
-      transaction.setTypeOperation(SAQUE);
-    } else {
-      transaction.setValueTransaction(transactionTO.getValue());
-      transaction.setTypeOperation(DEPOSITO);
+    @Autowired
+    public TransactionServiceImpl(TransactionRepository transactionRepository, CurrentAccountService currentAccountService) {
+        this.transactionRepository = transactionRepository;
+        this.currentAccountService = currentAccountService;
     }
 
-    transaction.setDateTime(now());
+    @Override
+    public Transaction createTransaction(TransactionRequestDTO transactionRequestDTO) {
+        return executeTransaction(transactionRequestDTO);
+    }
 
-    return transactionRepository.save(transaction);
-  }
+    private Transaction executeTransaction(TransactionRequestDTO transactionRequestDTO) {
+        Transaction transactionSaved = saveTransaction(getTransactionForSave(transactionRequestDTO));
+        return transactionSaved;
+    }
 
-  @Override
-  public Balance getBalance() {
-    Balance balance = new Balance();
-    BigDecimal sum =
-        transactionRepository.findAll().stream()
-            .map(Transaction::getValueTransaction)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-    balance.setBalance(sum);
-    return balance;
-  }
+    private Transaction saveTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
+    }
+
+    private Transaction getTransactionForSave(TransactionRequestDTO dto) {
+        return aTransaction()
+                .withOperation(getTypeOperationByDescription(dto.getOperation()))
+                .withValueTransaction(getValueTransactionByOperation(dto))
+                .withCurrentAccount(updateCurrentsAccountsBalance(dto))
+                .withDateTime(now())
+                .builder();
+    }
+
+    private CurrentAccount updateCurrentsAccountsBalance(TransactionRequestDTO dto) {
+        return isTransfer(dto.getOperation()) ? doCurrentAccountTransfer(dto) : updateCurrentAccountBalance(dto);
+    }
+
+    private CurrentAccount doCurrentAccountTransfer(TransactionRequestDTO dto) {
+        CurrentAccountTransferDTO currentAccountTransferDTO =
+                CurrentAccountTransferDTO
+                        .builder()
+                        .currentAccountIndentify(dto.getOriginAccount())
+                        .destinationCurrentAccount(dto.getDestinationAccount())
+                        .balance(dto.getValue())
+                        .build();
+        return currentAccountService.doCurrentAccountTransferTranscation(currentAccountTransferDTO);
+    }
+
+    private CurrentAccount updateCurrentAccountBalance(TransactionRequestDTO dto) {
+        CurrentAccountDTO currentAccountDTO = CurrentAccountDTO
+                .builder()
+                .updatedBalance(getSumValueBalanceByHash(dto.getOriginAccount()))
+                .hashValue(dto.getOriginAccount())
+                .build();
+        return currentAccountService.updateCurrentAccountTranscation(currentAccountDTO);
+    }
+
+    private BigDecimal getSumValueBalanceByHash(String hashValue) {
+        Optional<BigDecimal> sumValueBalance = transactionRepository.getSumValueBalanceByHash(hashValue);
+        return sumValueBalance.isPresent() ? sumValueBalance.get() : ZERO;
+    }
+
+    private static BigDecimal getValueTransactionByOperation(TransactionRequestDTO dto) {
+        return isWITHDRAW(dto.getOperation()) ? dto.getValue().negate() : dto.getValue();
+    }
+
 }

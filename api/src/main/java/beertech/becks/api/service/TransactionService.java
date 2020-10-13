@@ -1,16 +1,12 @@
 package beertech.becks.api.service;
 
-import beertech.becks.api.entities.Balance;
 import beertech.becks.api.entities.Transaction;
-import beertech.becks.api.tos.TransactionRequestTO;
-
-import java.math.BigDecimal;
-import java.util.List;
+import beertech.becks.api.share.DTO.TransactionRequestDTO;
 
 public interface TransactionService {
 
-    Transaction createTransaction(TransactionRequestTO transactionTO);
+    Transaction createTransaction(TransactionRequestDTO transactionTO);
 
-    Balance getBalance();
+    //BalanceDTO getBalance();
 
 }
