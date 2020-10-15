@@ -1,5 +1,7 @@
 package beertech.becks.api.constants;
 
+import java.math.BigDecimal;
+
 public interface Constants {
 
     interface Messages {
@@ -13,6 +15,7 @@ public interface Constants {
 
     interface NUMBERS {
         Long NUMBER_1L = 1L;
+        BigDecimal VALUE_100 = new BigDecimal("100");
     }
 
     interface Hash {

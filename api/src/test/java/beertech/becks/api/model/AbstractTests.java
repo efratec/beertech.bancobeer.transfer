@@ -1,6 +1,7 @@
 package beertech.becks.api.model;
 
 import beertech.becks.api.controller.TransactionController;
+import beertech.becks.api.repositories.CurrentAccountRepository;
 import beertech.becks.api.repositories.TransactionRepository;
 import beertech.becks.api.service.CurrentAccountService;
 import beertech.becks.api.service.TransactionService;
@@ -14,6 +15,9 @@ public abstract class AbstractTests {
 
     @Mock
     public TransactionRepository transactionRepositoryMock;
+
+    @Mock
+    public CurrentAccountRepository currentAccountRepository;
 
     @Mock
     public CurrentAccountService currentAccountServiceMock;

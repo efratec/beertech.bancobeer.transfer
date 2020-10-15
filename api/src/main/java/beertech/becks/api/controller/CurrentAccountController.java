@@ -20,6 +20,12 @@ public class CurrentAccountController {
     @Autowired
     private CurrentAccountService currentAccountService;
 
+    @ApiResponses(
+            value = {
+        @ApiResponse(code = 200, message = STATUS_200_GET_OK),
+        @ApiResponse(code = 404, message = STATUS_404_NOTFOUND),
+        @ApiResponse(code = 500, message = STATUS_500_INTERNAL_SERVER_ERROR)
+    })
     @PostMapping
     public ResponseEntity<CurrentAccount> createCurrentAccount() {
         return new ResponseEntity<>(currentAccountService.createCurrentAccount(), CREATED);
