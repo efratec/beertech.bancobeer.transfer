@@ -22,4 +22,9 @@ public class Message {
 	 * The operation value
 	 */
 	private BigDecimal value;
+
+	private String originAccount;
+
+	private String destinationAccount;
+
 }

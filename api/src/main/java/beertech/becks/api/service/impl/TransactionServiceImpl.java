@@ -38,8 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private Transaction executeTransaction(TransactionRequestDTO transactionRequestDTO) {
-        Transaction transactionSaved = saveTransaction(getTransactionForSave(transactionRequestDTO));
-        return transactionSaved;
+        return saveTransaction(getTransactionForSave(transactionRequestDTO));
     }
 
     private Transaction saveTransaction(Transaction transaction) {
@@ -60,27 +59,28 @@ public class TransactionServiceImpl implements TransactionService {
         return isTransfer(dto.getOperation()) ? doCurrentAccountTransfer(dto) : updateCurrentAccountBalance(dto);
     }
 
-    private CurrentAccount doCurrentAccountTransfer(TransactionRequestDTO dto) {
+    private CurrentAccount doCurrentAccountTransfer(TransactionRequestDTO transactionRequestDTO) {
         CurrentAccountTransferDTO currentAccountTransferDTO =
                 CurrentAccountTransferDTO
                         .builder()
-                        .currentAccountIndentify(dto.getOriginAccount())
-                        .destinationCurrentAccount(dto.getDestinationAccount())
-                        .balance(dto.getValue())
+                        .currentAccountIndentify(transactionRequestDTO.getOriginAccount())
+                        .destinationCurrentAccount(transactionRequestDTO.getDestinationAccount())
+                        .balance(transactionRequestDTO.getValue())
                         .build();
         return currentAccountService.doCurrentAccountTransferTranscation(currentAccountTransferDTO);
     }
 
     private CurrentAccount updateCurrentAccountBalance(TransactionRequestDTO dto) {
+        BigDecimal valueBalance = getSumValueBalanceByHash(dto.getOriginAccount(), dto.getOperation());
         CurrentAccountDTO currentAccountDTO = CurrentAccountDTO
                 .builder()
-                .updatedBalance(getSumValueBalanceByHash(dto.getOriginAccount()).add(dto.getValue()))
+                .updatedBalance(isWITHDRAW(dto.getOperation()) ? valueBalance.subtract(dto.getValue()) : valueBalance.add(dto.getValue()))
                 .hashValue(dto.getOriginAccount())
                 .build();
         return currentAccountService.updateCurrentAccountTranscation(currentAccountDTO);
     }
 
-    private BigDecimal getSumValueBalanceByHash(String hashValue) {
+    private BigDecimal getSumValueBalanceByHash(String hashValue, String operation) {
         Optional<BigDecimal> sumValueBalance = transactionRepository.getSumValueBalanceByHash(hashValue);
         return sumValueBalance.isPresent() ? sumValueBalance.get() : ZERO;
     }
