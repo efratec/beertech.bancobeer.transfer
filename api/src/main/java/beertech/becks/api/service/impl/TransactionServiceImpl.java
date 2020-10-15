@@ -81,7 +81,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private BigDecimal getSumValueBalanceByHash(String hashValue, String operation) {
-        Optional<BigDecimal> sumValueBalance = transactionRepository.getSumValueBalanceByHash(hashValue);
+        Optional<BigDecimal> sumValueBalance = Optional.of(ZERO);//transactionRepository.getSumValueBalanceByHash(hashValue);
         return sumValueBalance.isPresent() ? sumValueBalance.get() : ZERO;
     }
 
