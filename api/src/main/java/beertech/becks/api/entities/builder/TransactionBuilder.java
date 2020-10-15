@@ -13,7 +13,7 @@ import static java.time.ZonedDateTime.now;
 
 public final class TransactionBuilder implements Builder<Transaction> {
 
-    private Transaction transaction = new Transaction();
+    private final Transaction transaction = new Transaction();
 
     private TransactionBuilder() {
     }

@@ -11,7 +11,7 @@ import static beertech.becks.api.utils.HashGenerator.getStringHash;
 
 public final class CurrentAccountBuilder implements Builder<CurrentAccount> {
 
-    private CurrentAccount currentAccount = new CurrentAccount();
+    private final CurrentAccount currentAccount = new CurrentAccount();
 
     private CurrentAccountBuilder() {
     }
