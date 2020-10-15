@@ -18,4 +18,12 @@ public class CurrentAccountFixture {
                 .builder();
     }
 
+    public static CurrentAccount aCurrentAccountForTransfer() {
+        return aCurrentAccount()
+                .withIdCurrentAccount(NUMBER_1L)
+                .withAccountBalance(new BigDecimal("100"))
+                .withHashAccount(HASH_c81e728d9d4c2f636f067f89cc14862c)
+                .builder();
+    }
+
 }

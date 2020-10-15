@@ -6,6 +6,7 @@ import beertech.becks.api.model.enums.TypeOperation;
 import java.math.BigDecimal;
 
 import static beertech.becks.api.constants.Constants.NUMBERS.NUMBER_1L;
+import static beertech.becks.api.constants.ContantsTests.Hash.HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3;
 import static beertech.becks.api.entities.builder.TransactionBuilder.aTransaction;
 import static beertech.becks.api.fixture.CurrentAccountFixture.aCurrentAccountForTests;
 import static beertech.becks.api.model.enums.TypeOperation.*;
@@ -32,13 +33,14 @@ public class TransactionFixture {
                 .builder();
     }
 
-    /*public static Transaction aTransferTransaction() {
+    public static Transaction aTransferTransaction() {
         return aTransaction()
                 .withCurrentAccount(aCurrentAccountForTests())
+                .withDestinationHashValue(HASH_eccbc87e4b5ce2fe28308fd9f2a7baf3)
                 .withDateTime(stringInZonedDateTime("10/10/2020"))
                 .withOperation(TRANSFER)
-                .withValueTransaction(new BigDecimal("100"))
+                .withValueTransaction(new BigDecimal("30"))
                 .builder();
-    }*/
+    }
 
 }

@@ -11,16 +11,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 import static beertech.becks.api.fixture.CurrentAccountFixture.aCurrentAccountForTests;
-import static beertech.becks.api.fixture.TransactionFixture.aDepositTransaction;
-import static beertech.becks.api.fixture.TransactionFixture.aWithdrawTransaction;
-import static beertech.becks.api.fixture.TransactionRequestFixture.aDepositTransactionRequest;
-import static beertech.becks.api.fixture.TransactionRequestFixture.aWithdrawTransactionRequest;
+import static beertech.becks.api.fixture.TransactionFixture.*;
+import static beertech.becks.api.fixture.TransactionRequestFixture.*;
 import static java.math.BigDecimal.ZERO;
 import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -57,7 +54,9 @@ public class TransactionServiceTest extends AbstractTests {
 
             transactionService = new TransactionServiceImpl(transactionRepositoryMock, currentAccountServiceMock);
 
-            allowReturns();
+            when(currentAccountServiceMock.updateCurrentAccountTranscation(any())).thenReturn(currentAccount);
+            when(transactionRepositoryMock.getSumValueBalanceByHash(any())).thenReturn(of(ZERO));
+            when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transactionExpected);
 
             Transaction getTransaction = transactionService.createTransaction(transactionRequestDTO);
 
@@ -75,7 +74,10 @@ public class TransactionServiceTest extends AbstractTests {
 
             transactionService = new TransactionServiceImpl(transactionRepositoryMock, currentAccountServiceMock);
 
-            allowReturns();
+            when(currentAccountServiceMock.updateCurrentAccountTranscation(any())).thenReturn(currentAccount);
+            when(transactionRepositoryMock.getSumValueBalanceByHash(any())).thenReturn(of(ZERO));
+            when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transactionExpected);
+
             Transaction transactionGetted = transactionService.createTransaction(transactionRequestDTO);
 
             assertNotNull(transactionGetted.getDateTime());
@@ -84,29 +86,25 @@ public class TransactionServiceTest extends AbstractTests {
             assertEquals(transactionGetted.getValueTransaction(), transactionExpected.getValueTransaction());
         }
 
-        private void allowReturns() {
-            when(currentAccountServiceMock.updateCurrentAccountTranscation(any())).thenReturn(currentAccount);
-            when(transactionRepositoryMock.getSumValueBalanceByHash(any())).thenReturn(of(ZERO));
-            when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transactionExpected);
-        }
-
-       /* @Test
+        @Test
         public void givenTransferInTheCurrentAccountWhenCreateTransactionThenShouldReturnSuccess() {
 
-            transaction = aDepositTransaction();
-            transactionRequestDTO = aDepositTransactionRequest();
+            transactionExpected = aTransferTransaction();
+            transactionRequestDTO = aTransferTransactionRequest();
 
             transactionService = new TransactionServiceImpl(transactionRepositoryMock, currentAccountServiceMock);
 
-            allowReturns();
+            when(currentAccountServiceMock.doCurrentAccountTransferTranscation(any())).thenReturn(currentAccount);
+            when(transactionRepositoryMock.getSumValueBalanceByHash(any())).thenReturn(of(ZERO));
+            when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transactionExpected);
 
             Transaction transaction = transactionService.createTransaction(transactionRequestDTO);
 
             assertNotNull(transaction.getDateTime());
             assertNotNull(transaction.getDateTime());
-            assertEquals(transactionRequestDTO.getOperation(), transaction.getTypeOperation().getDescription());
-            assertEquals(transactionRequestDTO.getValue(), transaction.getValueTransaction());
-        }*/
+            assertEquals(transactionRequestDTO.getOperation(), transactionExpected.getTypeOperation().getDescription());
+            assertEquals(transactionRequestDTO.getValue(), transactionExpected.getValueTransaction());
+        }
     }
 
 }
