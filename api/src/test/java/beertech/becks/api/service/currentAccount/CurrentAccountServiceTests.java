@@ -13,7 +13,6 @@ import static beertech.becks.api.constants.Constants.NUMBERS.VALUE_100;
 import static beertech.becks.api.constants.ContantsTests.Hash.HASH_c81e728d9d4c2f636f067f89cc14862c;
 import static beertech.becks.api.fixture.CurrentAccountFixture.aCurrentAccountForTests;
 import static java.math.BigDecimal.ZERO;
-import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
